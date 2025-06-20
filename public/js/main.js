@@ -1,4 +1,5 @@
-const OPENROUTER_API_KEY = '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';
+// Warning: Hardcoding API keys in client-side code is insecure. Move to a server-side solution for production.
+const OPENROUTER_API_KEY = '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';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Loading Animation
@@ -36,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     appendMsg(text, 'user');
     input.value = '';
-    
 
     const lower = text.toLowerCase();
     const contactKeywords = ['contact', 'support', 'email', 'phone', 'call', 'message'];
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-3.5-turbo',
+          model: 'meta-llama/llama-4-maverick:free', // Switched to a free model
           messages: [
             { role: 'system', content: 'You are a helpful AI assistant named Asur, created by Subhadip Dey.' },
             { role: 'user', content: text }
@@ -80,16 +80,27 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await res.json();
-      messages.lastChild.remove();
+      messages.lastChild.remove(); // Remove "Thinking..." message
 
-      if (data.choices && data.choices[0]) {
+      if (data.error) {
+        if (data.error.code === 'rate_limit_exceeded') {
+          appendMsg('⚠️ Error: Free model rate limit reached (50 requests/day). Try again tomorrow or use a paid model.', 'bot');
+        } else if (data.error.code === 'invalid_api_key') {
+          appendMsg('⚠️ Error: Invalid API key. Please check your OpenRouter account.', 'bot');
+        } else {
+          appendMsg(`⚠️ Error: ${data.error.message || 'Something went wrong.'}`, 'bot');
+        }
+        return;
+      }
+
+      if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
         appendMsg(data.choices[0].message.content.trim(), 'bot');
       } else {
-        appendMsg('❌ Sorry, I couldn’t understand that.', 'bot');
+        appendMsg('❌ Sorry, I couldn’t process the response. Please try again.', 'bot');
       }
     } catch (err) {
       messages.lastChild.remove();
-      appendMsg(`⚠️ Error: ${err.message}`, 'bot');
+      appendMsg(`⚠️ Error: ${err.message || 'Failed to connect to the server.'}`, 'bot');
     }
   });
 
