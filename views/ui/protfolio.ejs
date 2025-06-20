@@ -29,7 +29,7 @@
   </div>
 
   <!-- Spline Background -->
- <div id="galaxy-bg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a14 100%);">
+ <div id="dots-bg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;">
   <canvas id="bgCanvas" style="width: 100%; height: 100%;"></canvas>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -40,48 +40,36 @@
   const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  const stars = [];
-  const starCount = 500;
+  const dots = [];
+  const dotCount = 200;
+  const geometry = new THREE.SphereGeometry(0.1, 16, 16);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-  for (let i = 0; i < starCount; i++) {
-    const radius = Math.random() * 10 + 5;
-    const theta = Math.random() * 2 * Math.PI;
-    const phi = Math.random() * Math.PI;
-    const size = Math.random() * 0.05 + 0.02;
-    const geometry = new THREE.SphereGeometry(size, 16, 16);
-    const color = new THREE.Color().setHSL(Math.random(), 0.7, Math.random() * 0.5 + 0.5);
-    const material = new THREE.MeshBasicMaterial({ color: color });
-    const star = new THREE.Mesh(geometry, material);
-
-    star.position.set(
-      radius * Math.sin(phi) * Math.cos(theta),
-      radius * Math.sin(phi) * Math.sin(theta),
-      radius * Math.cos(phi)
+  for (let i = 0; i < dotCount; i++) {
+    const dot = new THREE.Mesh(geometry, material);
+    dot.position.set(
+      (Math.random() - 0.5) * 50,
+      (Math.random() - 0.5) * 50,
+      (Math.random() - 0.5) * 50
     );
-    star.velocity = new THREE.Vector3(
-      -Math.sin(theta) * 0.02,
-      Math.cos(theta) * 0.02,
-      Math.random() * 0.01
+    dot.velocity = new THREE.Vector3(
+      (Math.random() - 0.5) * 0.05,
+      (Math.random() - 0.5) * 0.05,
+      (Math.random() - 0.5) * 0.05
     );
-    scene.add(star);
-    stars.push(star);
+    scene.add(dot);
+    dots.push(dot);
   }
 
-  camera.position.z = 20;
+  camera.position.z = 25;
 
   function animate() {
     requestAnimationFrame(animate);
-    stars.forEach(star => {
-      star.position.add(star.velocity);
-      const radius = Math.sqrt(star.position.x ** 2 + star.position.y ** 2);
-      if (radius > 15) {
-        star.position.set(0, 0, 0);
-        const theta = Math.random() * 2 * Math.PI;
-        star.position.x = Math.cos(theta) * 5;
-        star.position.y = Math.sin(theta) * 5;
-        star.position.z = (Math.random() - 0.5) * 5;
-        star.velocity.set(-Math.sin(theta) * 0.02, Math.cos(theta) * 0.02, Math.random() * 0.01);
-      }
+    dots.forEach(dot => {
+      dot.position.add(dot.velocity);
+      if (dot.position.x < -25 || dot.position.x > 25) dot.velocity.x *= -1;
+      if (dot.position.y < -25 || dot.position.y > 25) dot.velocity.y *= -1;
+      if (dot.position.z < -25 || dot.position.z > 25) dot.velocity.z *= -1;
     });
     renderer.render(scene, camera);
   }
@@ -94,6 +82,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 </script>
+
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
     <div class="container">
@@ -476,7 +465,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
-  <script src="/js/main.js" defer></script>
+  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module" ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
+  <script src="/js/main.js" ></script>
 </body></html>
