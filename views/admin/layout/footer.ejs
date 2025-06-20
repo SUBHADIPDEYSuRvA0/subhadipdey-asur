@@ -1,0 +1,182 @@
+ </div>
+
+  <script>
+    // GSAP Timeline for animations
+    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+    tl.from(".navbar", {
+      opacity: 0,
+      y: -60,
+      duration: 1.2
+    })
+    .from(".navbar .logo, .navbar ul li, .navbar .toggle-btn", {
+      opacity: 0,
+      y: -20,
+      duration: 0.8,
+      stagger: 0.1
+    }, "-=0.8")
+    .from(".sidebar", {
+      opacity: 0,
+      x: -250,
+      duration: 1.5
+    }, "-=1")
+    .from(".sidebar .logo", {
+      opacity: 0,
+      scale: 0.2,
+      rotationY: 180,
+      duration: 1.5,
+      ease: "back.out(1.7)"
+    }, "-=1.2")
+    .from(".sidebar nav ul li", {
+      opacity: 0,
+      x: -50,
+      duration: 0.8,
+      stagger: 0.2
+    }, "-=1")
+    .from(".analytics-card", {
+      opacity: 0,
+      scale: 0.6,
+      rotationX: 60,
+      duration: 1.8,
+      transformOrigin: "center"
+    }, "-=1")
+    .from(".analytics-title", {
+      opacity: 0,
+      y: -50,
+      duration: 1,
+      ease: "back.out(1.7)"
+    }, "-=1")
+    .from(".stat-card", {
+      opacity: 0,
+      x: -100,
+      duration: 0.8,
+      stagger: 0.2
+    }, "-=0.8")
+    .from(".chart-container", {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      ease: "elastic.out(1, 0.4)"
+    }, "-=0.5");
+
+    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const navbarToggleBtn = document.getElementById('navbar-toggle-btn');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('visible');
+      if (sidebar.classList.contains('hidden')) {
+        sidebar.classList.add('collapsed');
+        mainContent.classList.add('full-width');
+        mainContent.classList.remove('collapsed');
+      } else {
+        sidebar.classList.remove('collapsed');
+        mainContent.classList.remove('full-width');
+        mainContent.classList.add('collapsed');
+      }
+      gsap.to(sidebar, {
+        width: sidebar.classList.contains('collapsed') ? 80 : 250,
+        transform: sidebar.classList.contains('hidden') ? 'translateX(-100%)' : 'translateX(0)',
+        duration: 0.3,
+        ease: "power2.inOut"
+      });
+      gsap.to(mainContent, {
+        marginLeft: sidebar.classList.contains('hidden') ? 0 : (sidebar.classList.contains('collapsed') ? 80 : 250),
+        duration: 0.3,
+        ease: "power2.inOut"
+      });
+    }
+
+    navbarToggleBtn.addEventListener('click', toggleSidebar);
+    sidebarToggleBtn.addEventListener('click', toggleSidebar);
+
+    // Simulated live analytics data
+    let totalVisits = 12345;
+    let uniqueVisitors = 8910;
+    let pageViews = 45678;
+    const visitorData = [1200, 1900, 1500, 2200, 1800, 2500];
+
+    function updateAnalytics() {
+      totalVisits += Math.floor(Math.random() * 10);
+      uniqueVisitors += Math.floor(Math.random() * 5);
+      pageViews += Math.floor(Math.random() * 20);
+      document.getElementById('total-visits').textContent = totalVisits.toLocaleString();
+      document.getElementById('unique-visitors').textContent = uniqueVisitors.toLocaleString();
+      document.getElementById('page-views').textContent = pageViews.toLocaleString();
+
+      visitorData.shift();
+      visitorData.push(Math.floor(Math.random() * 500 + 1500));
+      visitorChart.data.datasets[0].data = [...visitorData];
+      visitorChart.update();
+    }
+
+    // Chart.js for visitor analytics
+    const ctx = document.getElementById('visitorChart').getContext('2d');
+    const visitorChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['-5min', '-4min', '-3min', '-2min', '-1min', 'Now'],
+        datasets: [{
+          label: 'Visitors',
+          data: visitorData,
+          borderColor: '#facc15',
+          backgroundColor: 'rgba(250, 204, 21, 0.2)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#ffffff' },
+            grid: { color: 'rgba(250, 204, 21, 0.2)' }
+          },
+          x: {
+            ticks: { color: '#ffffff' },
+            grid: { color: 'rgba(250, 204, 21, 0.2)' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#ffffff' }
+          }
+        }
+      }
+    });
+
+    // Update analytics every 5 seconds
+    setInterval(updateAnalytics, 5000);
+
+    // Particle animation system
+    const particleContainer = document.getElementById('particle-container');
+    function createParticle() {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.background = `hsl(${Math.random() * 60 + 50}, 80%, 60%)`;
+      particleContainer.appendChild(particle);
+      setTimeout(() => particle.remove(), 8000);
+    }
+
+    // Generate particles at intervals
+    setInterval(createParticle, 200);
+
+    // Initial burst of particles
+    for (let i = 0; i < 30; i++) {
+      setTimeout(createParticle, i * 80);
+    }
+
+    // Responsive sidebar initialization
+    if (window.innerWidth <= 768) {
+      sidebar.classList.add('hidden');
+      mainContent.classList.add('full-width');
+      mainContent.classList.remove('collapsed');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<%- include("layout/header") %>
+  <!-- Main Content -->
+  <div class="container py-5">
+    <!-- Project Form -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8">
+        <div class="card p-4 shadow">
+          <h2 class="card-title mb-3"><%= project ? "Edit Project" : "Add Project" %></h2>
+          <form action="/Asur<%= project ? ('/projects/' + project._id + '?_method=PUT') : '/projects' %>" method="POST" enctype="multipart/form-data">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="title" class="form-label">Title<span class="text-danger">*</span></label>
+                <input type="text" id="title" name="title" value="<%= project ? project.title : '' %>" required class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label for="github" class="form-label">GitHub URL</label>
+                <input type="url" id="github" name="github" value="<%= project ? project.github : '' %>" class="form-control">
+              </div>
+              <div class="col-12">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="2"><%= project ? project.description : '' %></textarea>
+              </div>
+              <div class="col-md-6">
+                <label for="live" class="form-label">Live URL</label>
+                <input type="url" id="live" name="live" value="<%= project ? project.live : '' %>" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label for="image" class="form-label">Image<span class="text-danger">*</span></label>
+                <% if (project && project.image) { %>
+                  <img src="<%= project.image %>" alt="Project Image" class="mb-2 rounded w-100" style="max-height:90px;object-fit:cover;">
+                  <div class="form-text text-warning">Uploading a new image will replace the existing one.</div>
+                <% } %>
+                <input type="file" id="image" name="image" <%= project && project.image ? '' : 'required' %> accept="image/*" class="form-control">
+              </div>
+              <div class="col-12 form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="featured" name="featured" value="true" <%= project && project.featured ? 'checked' : '' %>>
+                <label class="form-check-label" for="featured">Featured</label>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-yellow mt-2"><%= project ? "Update" : "Create" %> Project</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Cards -->
+    <div class="row g-4">
+      <% projects.forEach(project => { %>
+        <div class="col-12 col-md-6">
+          <div class="card h-100 shadow d-flex flex-column">
+            <% if (project.image) { %>
+              <img src="<%= project.image %>" alt="<%= project.title %>" class="card-img-top rounded" style="object-fit:cover; max-height:180px;">
+            <% } else { %>
+              <div class="card-img-top rounded d-flex align-items-center justify-content-center bg-secondary" style="height:180px;">
+                <span class="text-warning">No Image</span>
+              </div>
+            <% } %>
+            <div class="card-body flex-grow-1 d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <h5 class="card-title mb-0"><%= project.title %></h5>
+                <% if (project.featured) { %>
+                  <span class="badge badge-featured ms-2">Featured</span>
+                <% } %>
+              </div>
+              <p class="card-text text-light mb-2" style="font-size:0.98rem;"><%= project.description ? project.description : '' %></p>
+              <div class="mb-2">
+                <% if (project.github) { %>
+                  <a href="<%= project.github %>" target="_blank" class="text-warning me-3 text-decoration-none"><i class="fab fa-github"></i> GitHub</a>
+                <% } %>
+                <% if (project.live) { %>
+                  <a href="<%= project.live %>" target="_blank" class="text-warning text-decoration-none"><i class="fas fa-external-link-alt"></i> Live</a>
+                <% } %>
+              </div>
+              <div class="mt-auto d-flex gap-2">
+                <a href="/Asur/projects/<%= project._id %>/edit" class="btn btn-yellow btn-sm">Edit</a>
+                <form action="/Asur/projects/delete/<%= project._id %>" method="POST" onsubmit="return confirm('Are you sure?');" class="d-inline">
+                  <button type="submit" class="btn btn-logout btn-sm">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
