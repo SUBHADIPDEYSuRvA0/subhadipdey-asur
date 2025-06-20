@@ -1,4 +1,4 @@
-const OPENROUTER_API_KEY = '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';
+const OPENROUTER_API_KEY = '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';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Loading Animation
