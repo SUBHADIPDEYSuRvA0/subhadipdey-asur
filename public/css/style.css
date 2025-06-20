@@ -105,7 +105,7 @@ h2 { font-size: 2rem; }
 }
 .navbar-brand {
   font-size: 1.8rem;
-   color:#4c00ff !important;
+  color:#8880ff !important;
   display: flex;
   align-items: center;
   gap: 10px;
