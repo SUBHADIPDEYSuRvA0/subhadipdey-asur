@@ -29,14 +29,71 @@
   </div>
 
   <!-- Spline Background -->
-  <div id="spline-bg">
-    <iframe
-      src="https://my.spline.design/orb-W8Bes6Z6NDInWLvXFi8wpSQK/?hideUI=1&hideWatermark=1"
-      allowfullscreen
-      title="Spline Background"
-    ></iframe>
-  </div>
+ <div id="galaxy-bg" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a14 100%);">
+  <canvas id="bgCanvas" style="width: 100%; height: 100%;"></canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script>
+  const canvas = document.getElementById('bgCanvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
+  const stars = [];
+  const starCount = 500;
+
+  for (let i = 0; i < starCount; i++) {
+    const radius = Math.random() * 10 + 5;
+    const theta = Math.random() * 2 * Math.PI;
+    const phi = Math.random() * Math.PI;
+    const size = Math.random() * 0.05 + 0.02;
+    const geometry = new THREE.SphereGeometry(size, 16, 16);
+    const color = new THREE.Color().setHSL(Math.random(), 0.7, Math.random() * 0.5 + 0.5);
+    const material = new THREE.MeshBasicMaterial({ color: color });
+    const star = new THREE.Mesh(geometry, material);
+
+    star.position.set(
+      radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.sin(phi) * Math.sin(theta),
+      radius * Math.cos(phi)
+    );
+    star.velocity = new THREE.Vector3(
+      -Math.sin(theta) * 0.02,
+      Math.cos(theta) * 0.02,
+      Math.random() * 0.01
+    );
+    scene.add(star);
+    stars.push(star);
+  }
+
+  camera.position.z = 20;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    stars.forEach(star => {
+      star.position.add(star.velocity);
+      const radius = Math.sqrt(star.position.x ** 2 + star.position.y ** 2);
+      if (radius > 15) {
+        star.position.set(0, 0, 0);
+        const theta = Math.random() * 2 * Math.PI;
+        star.position.x = Math.cos(theta) * 5;
+        star.position.y = Math.sin(theta) * 5;
+        star.position.z = (Math.random() - 0.5) * 5;
+        star.velocity.set(-Math.sin(theta) * 0.02, Math.cos(theta) * 0.02, Math.random() * 0.01);
+      }
+    });
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
     <div class="container">
