@@ -46,14 +46,18 @@ app.post('/api/chat', async (req, res) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: 'You are a helpful AI assistant named Asur, created by Subhadip Dey.' },
-          { role: 'user', content: userMessage }
-        ],
+        // a model that actually exists on OpenRouter
+        model: 'google/gemini-2.0-flash-exp:free',
+        temperature: 0.0,          // lock randomness
+        seed: 123456,              // repeatable results
         max_tokens: 200,
-        temperature: 0.0,   // ← lock the model so it never “gamble” words
-        seed: 123456        // ← use any fixed number OpenRouter lets you seed
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful AI assistant named Asur, created by Subhadip Dey.'
+          },
+          { role: 'user', content: userMessage }
+        ]
       })
     });
     const data = await aiRes.json();
@@ -66,7 +70,6 @@ app.post('/api/chat', async (req, res) => {
     res.status(500).json({ reply: `⚠️ Error: ${err.message}` });
   }
 });
-
 // --- ROUTES SETUP START ---
 app.use("/Asur", require("./app/router/admin/index"));
 app.use("/", require("./app/router/ui/protfoliopages.routes"));
