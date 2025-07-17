@@ -37,7 +37,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 app.post('/api/chat', async (req, res) => {
   try {
-    const fetch = (await import('node-fetch')).default; // Dynamic import
+    const fetch = (await import('node-fetch')).default;
     const userMessage = req.body.message;
     const aiRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -51,7 +51,9 @@ app.post('/api/chat', async (req, res) => {
           { role: 'system', content: 'You are a helpful AI assistant named Asur, created by Subhadip Dey.' },
           { role: 'user', content: userMessage }
         ],
-        max_tokens: 200
+        max_tokens: 200,
+        temperature: 0.0,   // ← lock the model so it never “gamble” words
+        seed: 123456        // ← use any fixed number OpenRouter lets you seed
       })
     });
     const data = await aiRes.json();
